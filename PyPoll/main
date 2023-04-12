@@ -1,0 +1,85 @@
+
+# module to create file paths across operating systems
+import os
+
+# Module for reading CSV files
+import csv
+# module to count
+from collections import Counter
+
+# Assigning the resource file path
+csvpath = os.path.join(r'\Users\samee\python-challenge\PyPoll', 'Resources', 'election_data.csv')
+
+
+VotesCount = [] # List to count votes
+PollPercent = []
+with open(csvpath) as csvfile:
+
+    # CSV reader specifies delimiter and variable that holds contents
+    csvreader = csv.reader(csvfile, delimiter=',')
+
+    #print(csvreader)
+
+    # Read the header row first (skip this step if there is now header)
+    csv_header = next(csvreader)
+    #print(f"CSV Header: {csv_header}")
+
+    for row in csvreader:
+        VotesCount.append(row[2])
+    
+    # Calculation of total votes
+    TotalVoteCount = len(VotesCount)
+    #print("Total Votes: " + str(len(VotesCount)))
+
+    # Function to Find the candidates in polls
+    CandidateList = []
+    def unique(list1):
+        # initialize a null list
+        
+         # traverse for all elements
+        for x in list1:
+            # check if exists in unique_list or not
+            if x not in CandidateList:
+                CandidateList.append(x)
+        # print list
+        #for x in CandidateList:
+            #print(x)
+
+    # Calling function to find the candidates list
+    unique(VotesCount)
+
+    # Counting the votes polled for each candidate and percentage
+    counts = Counter(VotesCount)
+           
+    for keys, value in counts.items():
+        pollpercent = round((value/TotalVoteCount)*100, 3)
+        PollPercent.append(pollpercent)
+        print(f"{keys} : {pollpercent}% ({value}) ")   
+
+    
+    
+
+    # Finding the winner of polls
+    winningvotes = 0
+    for keys, value in counts.items():
+        if value > winningvotes:
+            winningvotes = value
+            winner = keys
+    #Printing the winner of polls    
+    print(f"winner: {winner}")
+
+# Writing the output file to text file
+  
+with open('output.txt', 'w') as f:
+    f.writelines(f"""Election Results
+-------------------------
+Total Votes: {str(len(VotesCount))}
+-------------------------
+{CandidateList[0]} : {PollPercent[0]}% ({counts['Charles Casper Stockham']})
+{CandidateList[1]} : {PollPercent[1]}% ({counts['Diana DeGette']})
+{CandidateList[2]} : {PollPercent[2]}% ({counts['Raymon Anthony Doane']})
+winner: {winner}""")
+    f.close()
+
+
+
